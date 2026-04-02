@@ -1,14 +1,51 @@
 const express = require('express')
 const path = require('path')
+const {stdout} = require("nodemon/lib/config/defaults");
 const app = express()
+
+//ex1
+const omdb_api = "https://www.omdbapi.com/?apikey=1841ae8&"
+let movIDs = ["tt0120737","tt0100405","tt0120338"]
 
 // Serve static content in directory 'files'
 app.use(express.static(path.join(__dirname, 'files')));
 
 // Configure a 'get' endpoint for data..
-app.get('/movies', function (req, res) {
-  // Part 1: Remove the next line and replace with your code
-  res.send('!dlrow olleH')
+app.get('/movies', async function (req, res) {
+
+  // Ex 1 Retrieve movies data from API and return to frontend
+  try {
+
+    let movies = []
+
+    for(let i = 0; i < movIDs.length; i++) {
+
+      //Fetch from API
+      const response = await fetch(omdb_api+'i='+movIDs.at(i));
+      const movie = await response.json();
+      //const jMovie = JSON.parse(movie);
+
+      //console.log(movie);
+
+      movies.push(movie);
+       //todo:
+
+    }
+
+    //movies = movies.map(value => {
+    //  Title: movies.title;
+    //})
+
+
+
+
+    res.json(movies); // send API data to frontend
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching movies');
+  }
+
+  //res.send('!dlrow olleH')
 })
 
 app.listen(3000)
