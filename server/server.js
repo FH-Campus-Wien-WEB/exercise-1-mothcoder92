@@ -25,19 +25,15 @@ app.get('/movies', async function (req, res) {
       const movie = await response.json();
       //const jMovie = JSON.parse(movie);
 
-      //console.log(movie);
+      //console.log(movie)
 
-      movies.push(movie);
-       //todo:
-
+      // Helper function to format 1.)
+      movies.push(transformMovie(movie));
     }
 
     //movies = movies.map(value => {
     //  Title: movies.title;
     //})
-
-
-
 
     res.json(movies); // send API data to frontend
   } catch (error) {
@@ -47,6 +43,23 @@ app.get('/movies', async function (req, res) {
 
   //res.send('!dlrow olleH')
 })
+
+// Re-format movie
+function transformMovie(movie) {
+  return {
+    Title: movie.Title,
+    Released: new Date(movie.Released).toISOString(), //ISO Format thingy
+    Runtime: parseInt(movie.Runtime), //parse out just number
+    Genres: movie.Genre.split(',').map(genre => genre.trim()),
+    Directors: movie.Director.split(',').map(director => director.trim()),
+    Writers: movie.Writer.split(',').map(writer => writer.trim()),
+    Actors: movie.Actors.split(',').map(actor => actor.trim()),
+    Plot: movie.Plot,
+    Poster: movie.Poster,
+    Metascore: Number(movie.Metascore),
+    imdbRating: Number(movie.imdbRating)
+  };
+}
 
 app.listen(3000)
 

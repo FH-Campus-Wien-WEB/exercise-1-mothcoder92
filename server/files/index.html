@@ -7,6 +7,45 @@
     <title>Movies!</title>
     <style>
         /* Part 3: Your styling goes here */
+
+        body {
+            background-color: gray;
+            font-family: sans-serif;
+
+            display: flex;
+            flex-direction: row;
+            gap: 0.5em;
+
+            align-items: flex-start;
+            flex-wrap: wrap;
+            padding: 0.2em;
+        }
+
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+
+            width: 400px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 0.5em;
+        }
+        .movie-title{
+            font-size: 15px;
+        }
+        .movie-poster{
+            border-radius: 2%;
+            width: 100%;
+            display: block;
+
+        }
+        .list-of-people{
+            color: aqua;
+        }
+
+
+
     </style>
     <script>
         function reverseString(s) {
@@ -18,8 +57,13 @@
             xhr.onload = function () {
                 const bodyElement = document.querySelector("body")
                 if (xhr.status == 200) {
-		            /* Part 2: Build the HTML elements here and append them to the body */ 
-                    bodyElement.append(xhr.responseText)
+		            /* Part 2: Build the HTML elements here and append them to the body */
+
+                    const data = JSON.parse(xhr.responseText)
+                    //console.log(data)
+                    renderJsonContent(data, bodyElement)
+
+                    //bodyElement.append(xhr.responseText)
                 } else {
                     bodyElement.append("Daten konnten nicht geladen werden, Status " + xhr.status + " - " + xhr.statusText)
                 }
@@ -27,11 +71,71 @@
             xhr.open("GET", "/movies")
             xhr.send()
         }
+
+        function renderJsonContent(movies, parent){
+            //const container = document.getElementById('movieWrapper');
+
+            movies.forEach(m => {
+                const card = document.createElement('div');
+                card.classList.add("card");
+
+                // interpolation-> dont use 'or " or whatever
+                // Title and pic
+                card.innerHTML =
+                    `<img src=${m.Poster} alt="Poster image of ${m.Title}" class="movie-poster"/>
+                    <h2 class="movie-title">${m.Title}</h2>
+                    <p>Featuring:</p>`
+
+                // Actors
+                card.append(listOfPeople(m.Actors))
+                const info = document.createElement('div');
+                info.innerHTML =`<p>Written by:</p>`
+                card.append(info)
+
+                // Directors
+                card.append(listOfPeople(m.Directors))
+
+                // Plot & Genre
+                const info2 = document.createElement('div');
+                info2.innerHTML =
+                    `<p>Genres: ${m.Genres}</p>
+                     <p>${m.Plot}</p>`
+                card.append(info2)
+
+                // Footer
+                const footer = document.createElement('div');
+                footer.innerHTML =
+                    `<p><small>${m.Runtime} min, rated: ${m.Metascore}(Meta), ${m.imdbRating}(IMDB)</small></p>
+                     <p>Release: ${m.Released}</p>`
+                card.append(footer);
+
+                //Add to body
+                parent.append(card);
+                parent.append(document.createElement('hr'));
+            })
+
+        }
+
+        function listOfPeople(arr){
+            const div = document.createElement('div');
+            div.className="list-of-people";
+            div.classList.add("container");
+            const ul = document.createElement('ul');
+            arr.forEach(person => {
+                const li = document.createElement('li');
+                li.innerHTML = `<i>${person}</i>`
+                ul.appendChild(li);
+            })
+            div.appendChild(ul);
+            return div;
+        }
+
     </script>
 
 </head>
 
 <body>
+
 </body>
 
 </html>
